@@ -235,8 +235,8 @@ class Graph {
                     for (int i = 0; i < v - 1; i++) {
                         g1.addEdge(i, i + 1);
                     }
-                    // Certifique-se de que o último vértice esteja conectado ao primeiro para
-                    // formar um ciclo.
+                    // Para criar um grafo semi-euleriano, certifique-se de que exatamente dois
+                    // vértices tenham grau ímpar.
                     g1.addEdge(v - 1, 0);
                     testGraph(g1);
                     break;
@@ -247,9 +247,10 @@ class Graph {
                     for (int i = 0; i < v - 1; i++) {
                         g2.addEdge(i, i + 1);
                     }
-                    // Certifique-se de que o último vértice esteja conectado ao primeiro para
-                    // formar um ciclo.
+                    // Para criar um grafo não euleriano, certifique-se de que mais de dois vértices
+                    // tenham grau ímpar.
                     g2.addEdge(v - 1, 0);
+                    g2.addEdge(0, 2); // Isso fará com que os vértices 0, 1 e 2 tenham grau ímpar.
                     testGraph(g2);
                     break;
                 case 10000:
@@ -259,8 +260,8 @@ class Graph {
                     for (int i = 0; i < v - 1; i++) {
                         g3.addEdge(i, i + 1);
                     }
-                    // Certifique-se de que o último vértice esteja conectado ao primeiro para
-                    // formar um ciclo.
+                    // Para criar um grafo semi-euleriano, certifique-se de que exatamente dois
+                    // vértices tenham grau ímpar.
                     g3.addEdge(v - 1, 0);
                     testGraph(g3);
                     break;
@@ -271,9 +272,10 @@ class Graph {
                     for (int i = 0; i < v - 1; i++) {
                         g4.addEdge(i, i + 1);
                     }
-                    // Certifique-se de que o último vértice esteja conectado ao primeiro para
-                    // formar um ciclo.
+                    // Para criar um grafo não euleriano, certifique-se de que mais de dois vértices
+                    // tenham grau ímpar.
                     g4.addEdge(v - 1, 0);
+                    g4.addEdge(0, 2); // Isso fará com que os vértices 0, 1 e 2 tenham grau ímpar.
                     testGraph(g4);
                     break;
             }
@@ -307,5 +309,4 @@ class Graph {
         long duration = (endTime - startTime);
         System.out.println("Tempo de execução para " + g.vertices + " vértices: " + duration + " nanosegundos");
     }
-
 }
