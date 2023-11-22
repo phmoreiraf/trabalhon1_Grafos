@@ -249,7 +249,7 @@ class Graph {
                     }
                     // Para criar um grafo não euleriano, certifique-se de que mais de dois vértices
                     // tenham grau ímpar.
-                    g2.addEdge(v - 1, 0);
+                    g2.addEdge(v - 1, 0); // Semi eureliano
                     g2.addEdge(0, 2); // Isso fará com que os vértices 0, 1 e 2 tenham grau ímpar.
                     testGraph(g2);
                     break;
@@ -291,7 +291,7 @@ class Graph {
         if (res == 0)
             System.out.println("O grafo não é euleriano");
         else if (res == 1)
-            System.out.println("O grafo tem um caminho euleriano");
+            System.out.println("O grafo tem um caminho euleriano (Semi - Eureliano)");
         else
             System.out.println("O grafo tem um ciclo euleriano");
 
