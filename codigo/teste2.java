@@ -1,6 +1,6 @@
 package codigo;
 
-import java.io.*;
+//import java.io.*;
 import java.util.*;
 
 // Classe para representar um grafo
@@ -17,13 +17,13 @@ class Graph {
     }
 
     // Função para adicionar uma aresta ao grafo
-    void addEdge(int v, int w) {
+    public void addEdge(int v, int w) {
         adj[v].add(w); // Adiciona w à lista de v
         adj[w].add(v); // Adiciona v à lista de w
     }
 
     // Método Naive para encontrar pontes
-    void bridgeNaive() {
+    public void bridgeNaive() {
         // Percorre todas as arestas uma por uma
         for (int u = 0; u < V; u++) {
             for (int v : adj[u]) {
@@ -60,7 +60,7 @@ class Graph {
     }
 
     // Método de Tarjan para encontrar pontes
-    void bridgeTarjan() {
+    public void bridgeTarjan() {
         boolean visited[] = new boolean[V];
         int disc[] = new int[V];
         int low[] = new int[V];
@@ -79,7 +79,7 @@ class Graph {
     }
 
     // Função recursiva para encontrar pontes
-    void bridgeTarjanUtil(int u, boolean visited[], int disc[], int low[], int parent[]) {
+    public void bridgeTarjanUtil(int u, boolean visited[], int disc[], int low[], int parent[]) {
         int time = 0;
         visited[u] = true;
         disc[u] = low[u] = ++time;
@@ -108,7 +108,7 @@ class Graph {
     }
 
     // Método de Fleury para encontrar um caminho euleriano
-    void fleury(int start) {
+    public void fleury(int start) {
         // Percorre todas as arestas uma por uma
         for (int v : adj[start]) {
             // Se a aresta não é uma ponte, então a remove do grafo e imprime o caminho
@@ -123,7 +123,7 @@ class Graph {
     }
 
     // Função para verificar se uma aresta é uma ponte
-    boolean isBridge(int u, int v) {
+    public boolean isBridge(int u, int v) {
         // Conta o número de vértices alcançáveis a partir de u
         boolean visited[] = new boolean[V];
         int count1 = DFSCount(u, visited);
@@ -143,7 +143,7 @@ class Graph {
     }
 
     // Função para contar o número de vértices alcançáveis a partir de v
-    int DFSCount(int v, boolean visited[]) {
+    public int DFSCount(int v, boolean visited[]) {
         visited[v] = true;
         int count = 1;
         for (int adj : adj[v])
@@ -154,7 +154,7 @@ class Graph {
 
     // Função para verificar se um grafo é euleriano, semi-euleriano ou não
     // euleriano
-    int isEulerian() {
+    public int isEulerian() {
         // Verifica se todos os vértices não isolados têm grau par
         int odd = 0;
         for (int i = 0; i < V; i++)
