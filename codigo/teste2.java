@@ -216,10 +216,35 @@ public class teste2 {
                 return;
         }
 
-        Graph g = new Graph(v);
+        // Cria três grafos: euleriano, semi-euleriano e não euleriano
+        Graph eulerian = new Graph(v);
+        Graph semiEulerian = new Graph(v);
+        Graph nonEulerian = new Graph(v);
+        // Graph g = new Graph(v);
+
+        /*
+         * for (int i = 0; i < v; i++) {
+         * for (int j = i + 1; j < v; j++) {
+         * g.addEdge(i, j);
+         * }
+         * }
+         */
+
+        // Adiciona arestas aos grafos
         for (int i = 0; i < v; i++) {
             for (int j = i + 1; j < v; j++) {
-                g.addEdge(i, j);
+                // O grafo euleriano é um grafo completo
+                eulerian.addEdge(i, j);
+
+                // O grafo semi-euleriano tem duas arestas a menos
+                if (j != i + 1 && j != i + 2) {
+                    semiEulerian.addEdge(i, j);
+                }
+
+                // O grafo não euleriano tem três arestas a menos
+                if (j != i + 1 && j != i + 2 && j != i + 3) {
+                    nonEulerian.addEdge(i, j);
+                }
             }
         }
 
@@ -237,20 +262,44 @@ public class teste2 {
         switch (choice) {
             case 1:
                 startTime = System.nanoTime();
-                g.bridgeNaive();
+                eulerian.bridgeNaive();
                 endTime = System.nanoTime();
-                System.out.println(
-                        "Tempo para o método Naive com " + v + " vértices: " + (endTime - startTime) + " segundos");
+                System.out.println("Tempo para o método Naive com grafo euleriano de " + v + " vértices: "
+                        + (endTime - startTime) + " segundos");
+
+                startTime = System.nanoTime();
+                semiEulerian.bridgeNaive();
+                endTime = System.nanoTime();
+                System.out.println("Tempo para o método Naive com grafo semi-euleriano de " + v + " vértices: "
+                        + (endTime - startTime) + " segundos");
+
+                startTime = System.nanoTime();
+                nonEulerian.bridgeNaive();
+                endTime = System.nanoTime();
+                System.out.println("Tempo para o método Naive com grafo não euleriano de " + v + " vértices: "
+                        + (endTime - startTime) + " segundos");
                 break;
             case 2:
                 startTime = System.nanoTime();
-                g.bridgeTarjan();
+                eulerian.bridgeTarjan();
                 endTime = System.nanoTime();
-                System.out.println("Tempo para o método de Tarjan com " + v + " vértices: " + (endTime - startTime)
-                        + " segundos");
+                System.out.println("Tempo para o método de Tarjan com grafo euleriano de " + v + " vértices: "
+                        + (endTime - startTime) + " segundos");
+
+                startTime = System.nanoTime();
+                semiEulerian.bridgeTarjan();
+                endTime = System.nanoTime();
+                System.out.println("Tempo para o método de Tarjan com grafo semi-euleriano de " + v + " vértices: "
+                        + (endTime - startTime) + " segundos");
+
+                startTime = System.nanoTime();
+                nonEulerian.bridgeTarjan();
+                endTime = System.nanoTime();
+                System.out.println("Tempo para o método de Tarjan com grafo não euleriano de " + v + " vértices: "
+                        + (endTime - startTime) + " segundos");
                 break;
             case 3:
-                startTime = System.nanoTime();
+                /*startTime = System.nanoTime();
                 int res = g.isEulerian();
                 if (res == 0)
                     System.out.println("O grafo não é euleriano.");
@@ -263,7 +312,7 @@ public class teste2 {
                 g.fleury(0);
                 endTime = System.nanoTime();
                 System.out.println("Tempo para o método de Fleury com " + v + " vértices: " + (endTime - startTime)
-                        + " segundos");
+                        + " segundos"); */
                 break;
             case 5:
                 System.err.println("Saindo...");
