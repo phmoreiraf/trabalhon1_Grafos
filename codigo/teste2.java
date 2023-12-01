@@ -299,20 +299,42 @@ public class teste2 {
                         + (endTime - startTime) + " segundos");
                 break;
             case 3:
-                /*startTime = System.nanoTime();
-                int res = g.isEulerian();
-                if (res == 0)
-                    System.out.println("O grafo não é euleriano.");
-                else if (res == 1)
-                    System.out.println("O grafo é semi-euleriano.");
-                else
-                    System.out.println("O grafo é euleriano.");
 
-                // Encontra um caminho euleriano usando o método de Fleury
-                g.fleury(0);
+                startTime = System.nanoTime();
+                eulerian.fleury(0);
                 endTime = System.nanoTime();
-                System.out.println("Tempo para o método de Fleury com " + v + " vértices: " + (endTime - startTime)
-                        + " segundos"); */
+                System.out.println("Tempo para o método de Fleury com grafo euleriano de " + v + " vértices: "
+                        + (endTime - startTime) + " segundos");
+
+                startTime = System.nanoTime();
+                semiEulerian.fleury(0);
+                endTime = System.nanoTime();
+                System.out.println("Tempo para o método de Fleury com grafo semi-euleriano de " + v + " vértices: "
+                        + (endTime - startTime) + " segundos");
+
+                startTime = System.nanoTime();
+                nonEulerian.fleury(0);
+                endTime = System.nanoTime();
+                System.out.println("Tempo para o método de Fleury com grafo não euleriano de " + v + " vértices: "
+                        + (endTime - startTime) + " segundos");
+
+                /*
+                 * startTime = System.nanoTime();
+                 * int res = g.isEulerian();
+                 * if (res == 0)
+                 * System.out.println("O grafo não é euleriano.");
+                 * else if (res == 1)
+                 * System.out.println("O grafo é semi-euleriano.");
+                 * else
+                 * System.out.println("O grafo é euleriano.");
+                 * 
+                 * // Encontra um caminho euleriano usando o método de Fleury
+                 * g.fleury(0);
+                 * endTime = System.nanoTime();
+                 * System.out.println("Tempo para o método de Fleury com " + v + " vértices: " +
+                 * (endTime - startTime)
+                 * + " segundos");
+                 */
                 break;
             case 5:
                 System.err.println("Saindo...");
@@ -323,5 +345,6 @@ public class teste2 {
                 scanner.close();
                 return;
         }
+        // scanner.close();
     }
 }
