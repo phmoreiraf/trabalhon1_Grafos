@@ -1,305 +1,310 @@
 package codigo;
 
-//import java.io.*;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
-// Classe para representar um grafo
 class Graph {
-    private int V; // Número de vértices
-    private LinkedList<Integer> adj[]; // Lista de adjacências
+    private int vertices;
+    private LinkedList<Integer> adj[];
+    private int time = 0;
+    private static final int NIL = -1;
 
     // Construtor
     Graph(int v) {
-        V = v;
+        vertices = v;
         adj = new LinkedList[v];
         for (int i = 0; i < v; ++i)
             adj[i] = new LinkedList();
     }
 
-    // Função para adicionar uma aresta ao grafo
-    public void addEdge(int v, int w) {
-        adj[v].add(w); // Adiciona w à lista de v
-        adj[w].add(v); // Adiciona v à lista de w
+    // Método para adicionar uma aresta ao grafo
+    void addEdge(int v, int w) {
+        adj[v].add(w);
+        adj[w].add(v);
     }
 
-    // Método Naive para encontrar pontes
-    public void bridgeNaive() {
-        // Percorre todas as arestas uma por uma
-        for (int u = 0; u < V; u++) {
-            for (int v : adj[u]) {
-                // Remove aresta da lista de adjacências
-                adj[u].remove((Integer) v);
-                adj[v].remove((Integer) u);
+    // Método DFS para verificar se o grafo está conectado
+    void DFSUtil(int v, boolean visited[]) {
+        visited[v] = true;
+        int n;
 
-                // Verifica se o grafo ainda é conexo
-                boolean[] visited = new boolean[V];
-                int numVisited = 0;
-                LinkedList<Integer> queue = new LinkedList<Integer>();
-                queue.add((u + 1) % V); // Começa a busca em um vértice diferente de u
-                visited[(u + 1) % V] = true;
-                while (!queue.isEmpty()) {
-                    int s = queue.poll();
-                    numVisited++;
-                    for (int i : adj[s]) {
-                        if (!visited[i]) {
-                            visited[i] = true;
-                            queue.add(i);
-                        }
+        Iterator<Integer> i = adj[v].iterator();
+        while (i.hasNext()) {
+            n = i.next();
+            if (!visited[n])
+                DFSUtil(n, visited);
+        }
+    }
+
+    // Método para verificar se todos os vértices não-zero estão conectados
+    boolean isConnected() {
+        boolean visited[] = new boolean[vertices];
+        int i;
+        for (i = 0; i < vertices; i++)
+            visited[i] = false;
+
+        for (i = 0; i < vertices; i++)
+            if (adj[i].size() != 0)
+                break;
+
+        if (i == vertices)
+            return true;
+
+        DFSUtil(i, visited);
+
+        for (i = 0; i < vertices; i++)
+            if (visited[i] == false && adj[i].size() > 0)
+                return false;
+
+        return true;
+    }
+
+    // Método para verificar se o grafo é euleriano
+    int isEulerian() {
+        if (isConnected() == false)
+            return 0;
+
+        int odd = 0;
+        for (int i = 0; i < vertices; i++)
+            if (adj[i].size() % 2 != 0)
+                odd++;
+
+        if (odd > 2)
+            return 0;
+
+        return (odd == 2) ? 1 : 2;
+    }
+
+    // Método para imprimir o tour euleriano
+    void printEulerTour() {
+        int u = 0;
+        for (int i = 0; i < vertices; i++) {
+            if (adj[i].size() % 2 == 1) {
+                u = i;
+                break;
+            }
+        }
+
+        printEulerUtil(u);
+        System.out.println();
+    }
+
+    // Método para imprimir o tour euleriano a partir de um vértice
+    void printEulerUtil(int u) {
+        for (int i = 0; i < adj[u].size(); i++) {
+            int v = adj[u].get(i);
+
+            if (isValidNextEdge(u, v)) {
+                System.out.print(u + "-" + v + " ");
+
+                adj[u].remove(i);
+                for (int j = 0; j < adj[v].size(); j++) {
+                    if (adj[v].get(j) == u) {
+                        adj[v].remove(j);
+                        break;
                     }
                 }
 
-                // Se o número de vértices visitados é menor que V, então a aresta é uma ponte
-                if (numVisited < V)
-                    System.out.println(u + " " + v);
-
-                // Adiciona a aresta de volta à lista de adjacências
-                adj[u].add(v);
-                adj[v].add(u);
+                printEulerUtil(v);
             }
         }
     }
 
-    // Método de Tarjan para encontrar pontes
-    public void bridgeTarjan() {
-        boolean visited[] = new boolean[V];
-        int disc[] = new int[V];
-        int low[] = new int[V];
-        int parent[] = new int[V];
+    // Método para verificar se a próxima aresta é válida
+    boolean isValidNextEdge(int u, int v) {
+        if (adj[u].size() == 1) {
+            return true;
+        }
 
-        // Inicializa os arrays de visitados e pais
-        for (int i = 0; i < V; i++) {
-            parent[i] = -1;
+        boolean visited[] = new boolean[vertices];
+        int count1 = DFSCount(u, visited);
+
+        adj[u].remove((Integer) v);
+        for (int i = 0; i < adj[v].size(); i++) {
+            if (adj[v].get(i) == u) {
+                adj[v].remove(i);
+                break;
+            }
+        }
+
+        visited = new boolean[vertices];
+        int count2 = DFSCount(u, visited);
+
+        adj[u].add(v);
+        adj[v].add(u);
+
+        return (count1 > count2) ? false : true;
+    }
+
+    // Método para contar o número de vértices alcançáveis a partir de v
+    int DFSCount(int v, boolean visited[]) {
+        visited[v] = true;
+        int count = 1;
+
+        for (int adj : adj[v]) {
+            if (!visited[adj])
+                count += DFSCount(adj, visited);
+        }
+
+        return count;
+    }
+
+    // Método Naïve para detecção de pontes
+    void bridgeNaive() {
+        boolean visited[] = new boolean[vertices];
+        int disc[] = new int[vertices];
+        int low[] = new int[vertices];
+        int parent[] = new int[vertices];
+
+        for (int i = 0; i < vertices; i++) {
+            parent[i] = NIL;
             visited[i] = false;
         }
 
-        // Chama a função recursiva para encontrar pontes
-        for (int i = 0; i < V; i++)
+        for (int i = 0; i < vertices; i++)
             if (visited[i] == false)
-                bridgeTarjanUtil(i, visited, disc, low, parent);
+                bridgeNaiveUtil(i, visited, disc, low, parent);
     }
 
-    // Função recursiva para encontrar pontes
-    public void bridgeTarjanUtil(int u, boolean visited[], int disc[], int low[], int parent[]) {
-        int time = 0;
+    void bridgeNaiveUtil(int u, boolean visited[], int disc[], int low[], int parent[]) {
         visited[u] = true;
         disc[u] = low[u] = ++time;
 
-        // Percorre todos os vértices adjacentes a este
-        for (int v : adj[u]) {
-            // Se v não foi visitado, então o marca como visitado e processa a recursão
+        Iterator<Integer> i = adj[u].iterator();
+        while (i.hasNext()) {
+            int v = i.next();
             if (!visited[v]) {
                 parent[v] = u;
-                bridgeTarjanUtil(v, visited, disc, low, parent);
+                bridgeNaiveUtil(v, visited, disc, low, parent);
 
-                // Verifica se a subárvore enraizada em v tem uma conexão com um dos ancestrais
-                // de u
                 low[u] = Math.min(low[u], low[v]);
 
-                // Se o vértice de menor grau que pode ser alcançado de v é menor que o tempo de
-                // descoberta de u, então u-v é uma ponte
                 if (low[v] > disc[u])
                     System.out.println(u + " " + v);
-            }
-
-            // Atualiza o vértice de menor grau
-            else if (v != parent[u])
+            } else if (v != parent[u])
                 low[u] = Math.min(low[u], disc[v]);
         }
     }
 
-    // Método de Fleury para encontrar um caminho euleriano
-    public void fleury(int start) {
-        // Cria uma pilha para armazenar o caminho euleriano
-        Stack<Integer> stack = new Stack<>();
-        stack.push(start);
+    // Método de Tarjan para detecção de pontes
+    void bridgeTarjan() {
+        boolean visited[] = new boolean[vertices];
+        int disc[] = new int[vertices];
+        int low[] = new int[vertices];
+        int parent[] = new int[vertices];
 
-        // Cria uma lista para armazenar o caminho euleriano final
-        List<Integer> path = new ArrayList<>();
+        for (int i = 0; i < vertices; i++) {
+            parent[i] = NIL;
+            visited[i] = false;
+        }
 
-        while (!stack.isEmpty()) {
-            int current = stack.peek();
-            if (adj[current].size() > 0) {
-                // Se o vértice atual tem arestas, remove a primeira aresta e empilha o vértice
-                // adjacente
-                int next = adj[current].get(0);
-                adj[current].remove((Integer) next);
-                adj[next].remove((Integer) current);
-                stack.push(next);
-            } else {
-                // Se o vértice atual não tem arestas, adiciona-o ao caminho euleriano e
-                // remove-o da pilha
-                path.add(current);
-                stack.pop();
+        for (int i = 0; i < vertices; i++)
+            if (visited[i] == false)
+                bridgeTarjanUtil(i, visited, disc, low, parent);
+    }
+
+    void bridgeTarjanUtil(int u, boolean visited[], int disc[], int low[], int parent[]) {
+        visited[u] = true;
+        disc[u] = low[u] = ++time;
+
+        Iterator<Integer> i = adj[u].iterator();
+        while (i.hasNext()) {
+            int v = i.next();
+            if (!visited[v]) {
+                parent[v] = u;
+                bridgeTarjanUtil(v, visited, disc, low, parent);
+
+                low[u] = Math.min(low[u], low[v]);
+
+                if (low[v] > disc[u])
+                    System.out.println(u + " " + v);
+            } else if (v != parent[u])
+                low[u] = Math.min(low[u], disc[v]);
+        }
+    }
+
+    public static void main(String args[]) {
+        // Número de vértices nos grafos de teste
+        int[] vertices = { 100, 1000, 10000, 100000 };
+
+        for (int v : vertices) {
+            switch (v) {
+                case 100:
+                    // Criação do grafo com 100 vértices
+                    Graph g1 = new Graph(v);
+                    // Adicione as arestas ao grafo g1 aqui...
+                    for (int i = 0; i < v - 1; i++) {
+                        g1.addEdge(i, i + 1);
+                    }
+                    // Certifique-se de que o último vértice esteja conectado ao primeiro para
+                    // formar um ciclo.
+                    g1.addEdge(v - 1, 0);
+                    testGraph(g1);
+                    break;
+                case 1000:
+                    // Criação do grafo com 1000 vértices
+                    Graph g2 = new Graph(v);
+                    // Adicione as arestas ao grafo g2 aqui...
+                    for (int i = 0; i < v - 1; i++) {
+                        g2.addEdge(i, i + 1);
+                    }
+                    // Certifique-se de que o último vértice esteja conectado ao primeiro para
+                    // formar um ciclo.
+                    g2.addEdge(v - 1, 0);
+                    testGraph(g2);
+                    break;
+                case 10000:
+                    // Criação do grafo com 10000 vértices
+                    Graph g3 = new Graph(v);
+                    // Adicione as arestas ao grafo g3 aqui...
+                    for (int i = 0; i < v - 1; i++) {
+                        g3.addEdge(i, i + 1);
+                    }
+                    // Certifique-se de que o último vértice esteja conectado ao primeiro para
+                    // formar um ciclo.
+                    g3.addEdge(v - 1, 0);
+                    testGraph(g3);
+                    break;
+                case 100000:
+                    // Criação do grafo com 100000 vértices
+                    Graph g4 = new Graph(v);
+                    // Adicione as arestas ao grafo g4 aqui...
+                    for (int i = 0; i < v - 1; i++) {
+                        g4.addEdge(i, i + 1);
+                    }
+                    // Certifique-se de que o último vértice esteja conectado ao primeiro para
+                    // formar um ciclo.
+                    g4.addEdge(v - 1, 0);
+                    testGraph(g4);
+                    break;
             }
         }
-
-        // Imprime o caminho euleriano
-        for (int i : path) {
-            System.out.print(i + " ");
-        }
-        System.out.println();
     }
 
-    // Função para verificar se uma aresta é uma ponte
-    public boolean isBridge(int u, int v) {
-        // Conta o número de vértices alcançáveis a partir de u
-        boolean visited[] = new boolean[V];
-        int count1 = DFSCount(u, visited);
+    public static void testGraph(Graph g) {
+        // Início da medição do tempo
+        long startTime = System.nanoTime();
 
-        // Remove a aresta (u, v) e conta o número de vértices alcançáveis a partir de u
-        adj[u].remove((Integer) v);
-        adj[v].remove((Integer) u);
-        visited = new boolean[V];
-        int count2 = DFSCount(u, visited);
-
-        // Adiciona a aresta de volta ao grafo
-        adj[u].add(v);
-        adj[v].add(u);
-
-        // Se o número de vértices alcançáveis é reduzido, então a aresta é uma ponte
-        return (count1 > count2) ? true : false;
-    }
-
-    // Função para contar o número de vértices alcançáveis a partir de v
-    public int DFSCount(int v, boolean visited[]) {
-        visited[v] = true;
-        int count = 1;
-        for (int adj : adj[v])
-            if (!visited[adj])
-                count += DFSCount(adj, visited);
-        return count;
-    }
-
-    // Função para verificar se um grafo é euleriano, semi-euleriano ou não
-    // euleriano
-    public int isEulerian() {
-        // Verifica se todos os vértices não isolados têm grau par
-        int odd = 0;
-        for (int i = 0; i < V; i++)
-            if (adj[i].size() % 2 != 0)
-                odd++;
-
-        // Se o número de vértices com grau ímpar é 0, então o grafo é euleriano
-        // Se o número de vértices com grau ímpar é 2, então o grafo é semi-euleriano
-        // Se o número de vértices com grau ímpar é maior que 2, então o grafo não é
-        // euleriano
-        if (odd > 2)
-            return 0;
-        else if (odd == 2)
-            return 1;
+        // Verificação se o grafo é euleriano e impressão do tour euleriano
+        int res = g.isEulerian();
+        if (res == 0)
+            System.out.println("O grafo não é euleriano");
+        else if (res == 1)
+            System.out.println("O grafo tem um caminho euleriano");
         else
-            return 2;
-    }
-}
+            System.out.println("O grafo tem um ciclo euleriano");
 
-public class teste2 {
-    public static void main(String[] args) {
-        // Cria um scanner para ler a entrada do usuário
-        Scanner scanner = new Scanner(System.in);
+        g.printEulerTour();
 
-        // Pede ao usuário para escolher o tamanho do grafo
-        System.out.println("Escolha o tamanho do grafo:");
-        System.out.println("1. 100 vértices");
-        System.out.println("2. 1000 vértices");
-        System.out.println("3. 10000 vértices");
-        System.out.println("4. 100000 vértices");
-        System.out.println("5. Sair");
-        int choice = scanner.nextInt();
+        // Teste dos métodos de detecção de pontes
+        System.out.println("Pontes no grafo:");
+        g.bridgeNaive();
+        g.bridgeTarjan();
 
-        if (choice == 5) {
-            scanner.close();
-            return;
-        }
+        // Fim da medição do tempo
+        long endTime = System.nanoTime();
 
-        // Cria o grafo do tamanho escolhido
-        int v;
-        switch (choice) {
-            case 1:
-                v = 100;
-                break;
-            case 2:
-                v = 1000;
-                break;
-            case 3:
-                v = 10000;
-                break;
-            case 4:
-                v = 100000;
-                break;
-            case 5:
-                System.out.println("Saindo...");
-                scanner.close();
-            default:
-                System.out.println("Escolha inválida.");
-                return;
-        }
-        // Cria um único grafo
-        Graph g = new Graph(v);
-
-        // Adiciona arestas ao grafo
-        for (int i = 0; i < v; i++) {
-            for (int j = i + 1; j < v; j++) {
-                // Adiciona uma aresta se i e j são ambos ímpares ou ambos pares
-                // Isso cria um grafo que é euleriano para os primeiros 2 vértices,
-                // semi-euleriano para os primeiros 3 vértices, e não euleriano para 4 ou mais
-                // vértices
-                if ((i % 2 == 0 && j % 2 == 0) || (i % 2 == 1 && j % 2 == 1)) {
-                    g.addEdge(i, j);
-                }
-            }
-        }
-
-        // Pede ao usuário para escolher o método para identificar pontes ou encontrar
-        // um caminho euleriano
-        System.out.println("Escolha o método:");
-        System.out.println("1. Método Naive");
-        System.out.println("2. Método de Tarjan");
-        System.out.println("3. Método de Fleury");
-        System.out.println("4. Sair");
-        choice = scanner.nextInt();
-
-        // Executa o método escolhido e mede o tempo
-        long startTime, endTime;
-        switch (choice) {
-            case 1:
-                startTime = System.nanoTime();
-                g.bridgeNaive();
-                endTime = System.nanoTime();
-                System.out.println(
-                        "Tempo para o método Naive com " + v + " vértices: " + (endTime - startTime) + " nanosegundos");
-                break;
-            case 2:
-                startTime = System.nanoTime();
-                g.bridgeTarjan();
-                endTime = System.nanoTime();
-                System.out.println("Tempo para o método de Tarjan com " + v + " vértices: " + (endTime - startTime)
-                        + " nanosegundos");
-                break;
-            case 3:
-                if (g.isEulerian() != 0) {
-                    startTime = System.nanoTime();
-                    g.fleury(0);
-                    endTime = System.nanoTime();
-                    System.out.println("Tempo para o método de Fleury com " + v + " vértices: " + (endTime - startTime)
-                            + " nanosegundos");
-                } else {
-                    startTime = System.nanoTime();
-                    g.isEulerian();
-                    endTime = System.nanoTime();
-                    System.out.println("Tempo para o método de Fleury com " + v + " vértices: " + (endTime - startTime)
-                            + " nanosegundos");
-                }
-                break;
-            case 4:
-                System.err.println("Saindo...");
-                scanner.close();
-                break;
-            default:
-                System.out.println("Escolha inválida.");
-                scanner.close();
-                return;
-        }
-        // scanner.close();
+        // Cálculo e impressão do tempo de execução
+        long duration = (endTime - startTime);
+        System.out.println("Tempo de execução para " + g.vertices + " vértices: " + duration + " nanosegundos");
     }
 }
