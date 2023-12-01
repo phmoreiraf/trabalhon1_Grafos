@@ -234,35 +234,18 @@ public class teste2 {
                 System.out.println("Escolha inválida.");
                 return;
         }
+        // Cria um único grafo
+        Graph g = new Graph(v);
 
-        // Cria três grafos: euleriano, semi-euleriano e não euleriano
-        Graph eulerian = new Graph(v);
-        Graph semiEulerian = new Graph(v);
-        Graph nonEulerian = new Graph(v);
-        // Graph g = new Graph(v);
-
-        /*
-         * for (int i = 0; i < v; i++) {
-         * for (int j = i + 1; j < v; j++) {
-         * g.addEdge(i, j);
-         * }
-         * }
-         */
-
-        // Adiciona arestas aos grafos
+        // Adiciona arestas ao grafo
         for (int i = 0; i < v; i++) {
             for (int j = i + 1; j < v; j++) {
-                // O grafo euleriano é um grafo completo
-                eulerian.addEdge(i, j);
-
-                // O grafo semi-euleriano tem duas arestas a menos
-                if (j != i + 1 && j != i + 2) {
-                    semiEulerian.addEdge(i, j);
-                }
-
-                // O grafo não euleriano tem três arestas a menos
-                if (j != i + 1 && j != i + 2 && j != i + 3) {
-                    nonEulerian.addEdge(i, j);
+                // Adiciona uma aresta se i e j são ambos ímpares ou ambos pares
+                // Isso cria um grafo que é euleriano para os primeiros 2 vértices,
+                // semi-euleriano para os primeiros 3 vértices, e não euleriano para 4 ou mais
+                // vértices
+                if ((i % 2 == 0 && j % 2 == 0) || (i % 2 == 1 && j % 2 == 1)) {
+                    g.addEdge(i, j);
                 }
             }
         }
@@ -281,87 +264,34 @@ public class teste2 {
         switch (choice) {
             case 1:
                 startTime = System.nanoTime();
-                eulerian.bridgeNaive();
+                g.bridgeNaive();
                 endTime = System.nanoTime();
-                System.out.println("Tempo para o método Naive com grafo euleriano de " + v + " vértices: "
-                        + TimeUnit.SECONDS.convert((endTime - startTime), TimeUnit.NANOSECONDS) + " segundos");
-
-                startTime = System.nanoTime();
-                semiEulerian.bridgeNaive();
-                endTime = System.nanoTime();
-                System.out.println("Tempo para o método Naive com grafo semi-euleriano de " + v + " vértices: "
-                        + TimeUnit.SECONDS.convert((endTime - startTime), TimeUnit.NANOSECONDS) + " segundos");
-
-                startTime = System.nanoTime();
-                nonEulerian.bridgeNaive();
-                endTime = System.nanoTime();
-                System.out.println("Tempo para o método Naive com grafo não euleriano de " + v + " vértices: "
-                        + TimeUnit.SECONDS.convert((endTime - startTime), TimeUnit.NANOSECONDS) + " segundos");
+                System.out.println(
+                        "Tempo para o método Naive com " + v + " vértices: " + (endTime - startTime) + " nanosegundos");
                 break;
             case 2:
                 startTime = System.nanoTime();
-                eulerian.bridgeTarjan();
+                g.bridgeTarjan();
                 endTime = System.nanoTime();
-                System.out.println("Tempo para o método de Tarjan com grafo euleriano de " + v + " vértices: "
-                        + TimeUnit.SECONDS.convert((endTime - startTime), TimeUnit.NANOSECONDS) + " segundos");
-
-                startTime = System.nanoTime();
-                semiEulerian.bridgeTarjan();
-                endTime = System.nanoTime();
-                System.out.println("Tempo para o método de Tarjan com grafo semi-euleriano de " + v + " vértices: "
-                        + TimeUnit.SECONDS.convert((endTime - startTime), TimeUnit.NANOSECONDS) + " segundos");
-
-                startTime = System.nanoTime();
-                nonEulerian.bridgeTarjan();
-                endTime = System.nanoTime();
-                System.out.println("Tempo para o método de Tarjan com grafo não euleriano de " + v + " vértices: "
-                        + TimeUnit.SECONDS.convert((endTime - startTime), TimeUnit.NANOSECONDS) + " segundos");
+                System.out.println("Tempo para o método de Tarjan com " + v + " vértices: " + (endTime - startTime)
+                        + " nanosegundos");
                 break;
             case 3:
-
-                if (eulerian.isEulerian() != 0) {
+                if (g.isEulerian() != 0) {
                     startTime = System.nanoTime();
-                    eulerian.fleury(0);
+                    g.fleury(0);
                     endTime = System.nanoTime();
-                    System.out.println("Tempo para o método de Fleury com grafo euleriano de " + v + " vértices: "
-                            + TimeUnit.SECONDS.convert((endTime - startTime), TimeUnit.NANOSECONDS) + " segundos");
-                }
-
-                if (semiEulerian.isEulerian() != 0) {
+                    System.out.println("Tempo para o método de Fleury com " + v + " vértices: " + (endTime - startTime)
+                            + " nanosegundos");
+                } else {
                     startTime = System.nanoTime();
-                    semiEulerian.fleury(0);
+                    g.isEulerian();
                     endTime = System.nanoTime();
-                    System.out.println("Tempo para o método de Fleury com grafo semi-euleriano de " + v + " vértices: "
-                            + TimeUnit.SECONDS.convert((endTime - startTime), TimeUnit.NANOSECONDS) + " segundos");
-                }
-
-                if (nonEulerian.isEulerian() != 0) {
-                    startTime = System.nanoTime();
-                    nonEulerian.fleury(0);
-                    endTime = System.nanoTime();
-                    System.out.println("Tempo para o método de Fleury com grafo não euleriano de " + v + " vértices: "
-                            + TimeUnit.SECONDS.convert((endTime - startTime), TimeUnit.NANOSECONDS) + " segundos");
+                    System.out.println("Tempo para o método de Fleury com " + v + " vértices: " + (endTime - startTime)
+                            + " nanosegundos");
                 }
                 break;
-
-                /*
-                 * startTime = System.nanoTime();
-                 * int res = g.isEulerian();
-                 * if (res == 0)
-                 * System.out.println("O grafo não é euleriano.");
-                 * else if (res == 1)
-                 * System.out.println("O grafo é semi-euleriano.");
-                 * else
-                 * System.out.println("O grafo é euleriano.");
-                 * 
-                 * // Encontra um caminho euleriano usando o método de Fleury
-                 * g.fleury(0);
-                 * endTime = System.nanoTime();
-                 * System.out.println("Tempo para o método de Fleury com " + v + " vértices: " +
-                 * (endTime - startTime)
-                 * + " segundos");
-                 */
-            case 5:
+            case 4:
                 System.err.println("Saindo...");
                 scanner.close();
                 break;
