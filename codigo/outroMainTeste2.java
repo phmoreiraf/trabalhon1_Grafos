@@ -5,6 +5,20 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 
+public void fleury(int start) {
+        // Percorre todas as arestas uma por uma
+        for (int v : adj[start]) {
+            // Se a aresta não é uma ponte, então a remove do grafo e imprime o caminho
+            // euleriano
+            if (adj[start].size() == 1 || !isBridge(start, v)) {
+                System.out.print(start + "-" + v + " ");
+                adj[start].remove((Integer) v);
+                adj[v].remove((Integer) start);
+                fleury(v);
+            }
+        }
+    }
+
 public class outroMainTeste2 {
  
 
