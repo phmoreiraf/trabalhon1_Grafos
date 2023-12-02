@@ -27,7 +27,9 @@ class Graph {
     public void bridgeNaive() {
         // Percorre todas as arestas uma por uma
         for (int u = 0; u < V; u++) {
-            for (int v : adj[u]) {
+            // Cria uma cópia da lista de adjacências para iterar sobre ela
+            List<Integer> adjCopy = new ArrayList<>(adj[u]);
+            for (int v : adjCopy) {
                 // Remove aresta da lista de adjacências
                 adj[u].remove((Integer) v);
                 adj[v].remove((Integer) u);
@@ -50,8 +52,8 @@ class Graph {
                 }
 
                 // Se o número de vértices visitados é menor que V, então a aresta é uma ponte
-                if (numVisited < V)
-                    System.out.println(u + " " + v);
+                /*if (numVisited < V)
+                    System.out.println(u + " " + v);*/
 
                 // Adiciona a aresta de volta à lista de adjacências
                 adj[u].add(v);
